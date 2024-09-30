@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  telegram-bot:
+    build: .
+    container_name: tg_emotion_diary_bot
+    image: tg-emotion-diary-bot:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - BOT_NAME=${BOT_NAME}
+      - BOT_TOKEN=${BOT_TOKEN}
+      - USER_PASSWORD=${USER_PASSWORD}
