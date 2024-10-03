@@ -1,4 +1,4 @@
-package sia.emotion_diary_bot;
+package sia.emotion_diary_bot.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +36,7 @@ public class MessageService extends TelegramLongPollingBot {
 //            TODO add logic for saving answers
             users.putIfAbsent(chatId, message);
             sendMessage(chatId, "Questions have been written. Notifying will be on 10:00 PM");
+            sendDailyQuestions();
         } else {
             if (update.hasMessage() && update.getMessage().hasText()) {
 
@@ -43,6 +44,7 @@ public class MessageService extends TelegramLongPollingBot {
                     users.put(update.getMessage().getChatId(), null);
                     sendMessage(chatId, "Authentication success.");
                     sendMessage(chatId, "Now you will get messages for answering on 3 simple question every day by scheduling.");
+                    sendDailyQuestions();
                 } else {
                     sendMessage(chatId, "Authentication failed. Try again.");
                 }

@@ -1,4 +1,4 @@
-package sia.emotion_diary_bot;
+package sia.emotion_diary_bot.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 @Component
-public class TelegramBotRegistrar {
+public class TelegramBotRegistrarService {
 
     @Autowired
     private MessageService messageService;
