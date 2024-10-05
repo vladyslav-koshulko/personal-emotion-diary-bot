@@ -10,7 +10,7 @@
     </parent>
     <groupId>sia</groupId>
     <artifactId>personal-emotion-diary-bot</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>personal-emotion-diary-bot</name>
     <description>personal-emotion-diary-bot</description>
     <url/>
