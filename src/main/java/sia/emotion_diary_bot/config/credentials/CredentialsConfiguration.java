@@ -17,11 +17,10 @@ import org.springframework.context.annotation.Configuration;
 import sia.emotion_diary_bot.services.GoogleDriveService;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,14 +30,11 @@ public class CredentialsConfiguration {
 
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_FILE);
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
-
+    private final JsonFactory jsonFactory;
     @Value("${credentials.path}")
     private String CREDENTIALS_FILE_PATH;
-
     @Value("${user.email}")
     private String USER_EMAIL;
-
-    private final JsonFactory jsonFactory;
 
     public CredentialsConfiguration(JsonFactory jsonFactory) {
         this.jsonFactory = jsonFactory;
@@ -48,7 +44,11 @@ public class CredentialsConfiguration {
     public Credential credential(final NetHttpTransport netHttpTransport) throws IOException {
         LOGGER.debug("Credentials file: {}", CREDENTIALS_FILE_PATH);
         LOGGER.debug("Creating credentials...");
-        try (InputStream credentialsInputStream = Files.newInputStream(Paths.get(CREDENTIALS_FILE_PATH))) {
+        try (InputStream credentialsInputStream = getClass().getResourceAsStream(CREDENTIALS_FILE_PATH)) {
+            if (credentialsInputStream == null) {
+                LOGGER.error("Credentials file {} not found", CREDENTIALS_FILE_PATH);
+                throw new FileNotFoundException(CREDENTIALS_FILE_PATH);
+            }
             LOGGER.info("Credentials loaded.");
             GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(credentialsInputStream));
             GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
