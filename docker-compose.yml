@@ -6,6 +6,9 @@ services:
     image: tg-emotion-diary-bot:latest
     ports:
       - "8080:8080"
+      - "8888:8888"
+    env_file:
+      - .env
     environment:
       - SPRING_APP_NAME=${SPRING_APP_NAME}
       - BOT_NAME=${BOT_NAME}
