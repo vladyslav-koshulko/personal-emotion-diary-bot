@@ -1,7 +1,10 @@
 package sia.emotion_diary_bot.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -9,11 +12,14 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
+@PropertySource(value = "classpath:application-dev.yml", encoding = "UTF-8")
 public class MessageService extends TelegramLongPollingBot {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageService.class);
 
     @Autowired
     private GoogleDriveService googleDriveService;
@@ -23,48 +29,62 @@ public class MessageService extends TelegramLongPollingBot {
 
     @Value("${bot.name}")
     private String botName;
-    @Value("${bot.user.password}")
+
+    @Value("${user.password}")
     private String userPassword;
 
-    private Map<Long, String> users = new HashMap<>();
+    @Value("${user.questions}")
+    private String userMessages;
+
+    private Set<Long> users = new HashSet<>();
 
     @Override
     public void onUpdateReceived(Update update) {
+        LOGGER.info("Update received.");
         String message = update.getMessage().getText();
         Long chatId = update.getMessage().getChat().getId();
-        if (users.containsKey(update.getMessage().getChatId())) {
-//            TODO add logic for saving answers
-            users.putIfAbsent(chatId, message);
-            sendMessage(chatId, "Questions have been written. Notifying will be on 10:00 PM");
-            sendDailyQuestions();
+        if (users.contains(update.getMessage().getChatId())) {
+            handleAndSaveMessageOnDrive(message, chatId);
+            sendMessage(chatId, "Your answer was writen: " + message);
         } else {
             if (update.hasMessage() && update.getMessage().hasText()) {
 
                 if (message.equals(userPassword)) {
-                    users.put(update.getMessage().getChatId(), null);
+                    LOGGER.info("Authentication success for {}.", chatId);
+                    users.add(update.getMessage().getChatId());
                     sendMessage(chatId, "Authentication success.");
                     sendMessage(chatId, "Now you will get messages for answering on 3 simple question every day by scheduling.");
-                    sendDailyQuestions();
+                    try {
+                        sendMessage(chatId, googleDriveService.searchDriveFiles(null).get(0).toString());
+                    } catch (IOException e) {
+                        LOGGER.error(e.getMessage());
+                        throw new RuntimeException(e);
+                    }
                 } else {
+                    LOGGER.warn("Authentication failed for {}. Try again.", chatId);
                     sendMessage(chatId, "Authentication failed. Try again.");
                 }
             }
         }
     }
 
-
-//    TODO add method for saving data to the google drive to the specific folder and related files
-//    private void showDriveFiles(long chatId) {
-//        try {
-////            sendMessage(chatId, );
-//        } catch (IOException | GeneralSecurityException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    private void handleAndSaveMessageOnDrive(String message, long chatId) {
+        LOGGER.info("Handling and saving message on drive.");
+        try {
+            String savedMessage = googleDriveService.saveMessageOnDrive(message);
+            sendMessage(chatId, "Your answer was written on Google Drive: " + savedMessage);
+        } catch (IOException e) {
+            sendMessage(chatId, "An error occurred while saving the message. Try again.");
+            sendDailyQuestions();
+            LOGGER.error(e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     @Scheduled(cron = "0 0 22 * * ?")
     public void sendDailyQuestions() {
-        users.forEach(this::sendMessage);
+        LOGGER.info("Sending daily questions...");
+        users.forEach(chatId -> sendMessage(chatId, userMessages));
     }
 
     @Override
@@ -78,12 +98,14 @@ public class MessageService extends TelegramLongPollingBot {
     }
 
     public void sendMessage(Long chatId, String message) {
+        LOGGER.info("Sending message to: " + chatId);
         SendMessage msg = new SendMessage();
         msg.setChatId(chatId);
         msg.setText(message);
         try {
             execute(msg);
         } catch (TelegramApiException e) {
+            LOGGER.error(e.getMessage());
             e.printStackTrace();
         }
     }

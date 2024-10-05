@@ -30,11 +30,14 @@ import java.util.List;
 @Configuration
 public class CredentialsConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(GoogleDriveService.class);
-    private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_METADATA_READONLY);
+    private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_FILE);
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
 
     @Value("${credentials.path}")
     private String CREDENTIALS_FILE_PATH;
+
+    @Value("${user.email}")
+    private String USER_EMAIL;
 
 
     @Autowired
@@ -43,19 +46,21 @@ public class CredentialsConfiguration {
     @Bean
     public Credential credential(final NetHttpTransport netHttpTransport) throws IOException {
         LOGGER.info("Credentials file: " + CREDENTIALS_FILE_PATH);
+        LOGGER.info("Creating credentials...");
         try (InputStream credentialsInputStream = Files.newInputStream(Paths.get(CREDENTIALS_FILE_PATH))) {
             if (credentialsInputStream == null) {
-                LOGGER.warn("Credential input stream is null: " + credentialsInputStream);
+                LOGGER.error("Credential input stream is null: " + credentialsInputStream);
                 throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
             }
+            LOGGER.info("Credentials loaded.");
             GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(credentialsInputStream));
             GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                     netHttpTransport, jsonFactory, clientSecrets, SCOPES)
                     .setDataStoreFactory(new FileDataStoreFactory(new File(TOKENS_DIRECTORY_PATH)))
-                    .setAccessType("offline")
+                    .setAccessType("online")
                     .build();
             LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-            return new AuthorizationCodeInstalledApp(flow, receiver).authorize("vlad");
+            return new AuthorizationCodeInstalledApp(flow, receiver).authorize(USER_EMAIL);
         }
     }
 }

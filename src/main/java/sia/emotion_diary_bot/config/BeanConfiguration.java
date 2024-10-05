@@ -23,6 +23,7 @@ public class BeanConfiguration {
 
     @Bean
     public NetHttpTransport netHttpTransport() {
+        LOGGER.debug("Creating NetHttpTransport...");
         try {
             return GoogleNetHttpTransport.newTrustedTransport();
         } catch (GeneralSecurityException | IOException e) {
