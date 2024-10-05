@@ -1,0 +1,22 @@
+
+spring:
+  application:
+    name: ${SPRING_APP_NAME}
+
+bot:
+  token: ${BOT_TOKEN}
+  name: ${BOT_NAME}
+
+
+user:
+  email: ${USER_EMAIL}
+  password: ${USER_PASSWORD}
+  questions: ${USER_QUESTIONS}
+
+google:
+  drive:
+    app:
+      name: ${DRIVE_APP_NAME}
+
+credentials:
+  path: ${CREDENTIALS_PATH}
