@@ -7,6 +7,11 @@ services:
     ports:
       - "8080:8080"
     environment:
+      - SPRING_APP_NAME=${SPRING_APP_NAME}
       - BOT_NAME=${BOT_NAME}
       - BOT_TOKEN=${BOT_TOKEN}
+      - USER_EMAIL=${USER_EMAIL}
       - USER_PASSWORD=${USER_PASSWORD}
+      - USER_QUESTIONS=${USER_QUESTIONS}
+      - DRIVE_APP_NAME=${DRIVE_APP_NAME}
+      - CREDENTIALS_PATH=${CREDENTIALS_PATH}

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class DriveConfiguration {
 
 
-    @Value("${drive.app.name}")
+    @Value("${google.drive.app.name}")
     private String APPLICATION_NAME;
 
 
