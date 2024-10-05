@@ -23,8 +23,9 @@ import java.util.Set;
 })
 public class MessageService extends TelegramLongPollingBot {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageService.class);
+
     private final Set<Long> users = new HashSet<>();
-    private final GoogleDriveService googleDriveService;
+
     @Value("${bot.token}")
     private String botToken;
     @Value("${bot.name}")
@@ -34,7 +35,9 @@ public class MessageService extends TelegramLongPollingBot {
     @Value("${user.questions}")
     private String userMessages;
     @Value("${bot.chat-id}")
-    private long chatId;
+    private Long chatId;
+
+    private final GoogleDriveService googleDriveService;
 
     public MessageService(GoogleDriveService googleDriveService) {
         this.googleDriveService = googleDriveService;
