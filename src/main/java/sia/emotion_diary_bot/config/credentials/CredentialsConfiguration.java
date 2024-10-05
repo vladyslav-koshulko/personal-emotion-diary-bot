@@ -1,4 +1,4 @@
-package sia.emotion_diary_bot.config;
+package sia.emotion_diary_bot.config.credentials;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -34,6 +34,7 @@ public class CredentialsConfiguration {
 
     @Value("${credentials.path}")
     private String CREDENTIALS_FILE_PATH;
+
     @Value("${user.email}")
     private String USER_EMAIL;
 
@@ -53,7 +54,7 @@ public class CredentialsConfiguration {
             GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                     netHttpTransport, jsonFactory, clientSecrets, SCOPES)
                     .setDataStoreFactory(new FileDataStoreFactory(new File(TOKENS_DIRECTORY_PATH)))
-                    .setAccessType("online")
+                    .setAccessType("offline")
                     .build();
             LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
             return new AuthorizationCodeInstalledApp(flow, receiver).authorize(USER_EMAIL);
