@@ -6,5 +6,4 @@ public abstract class Constants {
     public static final String FIELDS = "files(id,name)";
     public static final String SPACES = "drive";
     public static final String SEARCH_FOLDERS_QUERY = "mimeType = '" + DRIVE_FOLDER_MIME_TYPE + "' and name = '" + DRIVE_FOLDER_NAME + "'";
-
 }

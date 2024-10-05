@@ -6,6 +6,7 @@ spring:
 bot:
   token: ${BOT_TOKEN}
   name: ${BOT_NAME}
+  chat-id: ${CHAT_ID}
 
 
 user:

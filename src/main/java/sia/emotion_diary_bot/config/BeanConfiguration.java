@@ -27,7 +27,6 @@ public class BeanConfiguration {
         try {
             return GoogleNetHttpTransport.newTrustedTransport();
         } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
             LOGGER.error(e.getMessage());
             throw new RuntimeException(e);
         }
