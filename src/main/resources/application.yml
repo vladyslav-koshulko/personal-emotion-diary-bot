@@ -8,6 +8,9 @@ bot:
   name: ${BOT_NAME}
   chat-id: ${CHAT_ID}
 
+auth:
+  receiver:
+    host: ${RECEIVER_HOST}
 
 user:
   email: ${USER_EMAIL}

@@ -37,6 +37,8 @@ public class CredentialsConfiguration {
     private String USER_EMAIL;
     @Value("${server.port}")
     private int SERVER_PORT;
+    @Value("${auth.receiver.host}")
+    private String RECEIVER_HOST;
 
     public CredentialsConfiguration(JsonFactory jsonFactory) {
         this.jsonFactory = jsonFactory;
@@ -58,7 +60,7 @@ public class CredentialsConfiguration {
                     .setDataStoreFactory(new FileDataStoreFactory(new File(TOKENS_DIRECTORY_PATH)))
                     .setAccessType("offline")
                     .build();
-            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(SERVER_PORT).build();
+            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setHost(RECEIVER_HOST).setPort(SERVER_PORT).build();
             return new AuthorizationCodeInstalledApp(flow, receiver).authorize(USER_EMAIL);
         }
     }
