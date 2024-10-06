@@ -1,9 +1,8 @@
 FROM openjdk:17-jdk
 
-WORKDIR /app
-
-COPY ./target/personal-emotion-diary-bot-1.0.0.jar  /app/app.jar
+COPY ./target/personal-emotion-diary-bot-1.0.0.jar  /app.jar
 
 EXPOSE 8080
+COPY ./secrets/desktop-credentials.json /desktop-credentials.json
 
-ENTRYPOINT ["java", "-jar","/app/app.jar"]
+ENTRYPOINT ["java", "-jar","/app.jar"]
