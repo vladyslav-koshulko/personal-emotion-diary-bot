@@ -9,11 +9,11 @@ bot:
   chat-id: ${CHAT_ID}
 
 auth:
-  receiver:
-    host: ${RECEIVER_HOST}
+  service:
+    account:
+      key: ${SERVICE_ACCOUNT_KEY}
 
 user:
-  email: ${USER_EMAIL}
   password: ${USER_PASSWORD}
   questions: ${USER_QUESTIONS}
 
@@ -22,7 +22,5 @@ google:
     app:
       name: ${DRIVE_APP_NAME}
 
-credentials:
-  path: ${CREDENTIALS_PATH}
 server:
   port: 8080
