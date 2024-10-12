@@ -7,10 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 import sia.emotion_diary_bot.services.GoogleDriveService;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,18 +22,17 @@ public class CredentialsConfiguration {
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_FILE);
 
     @Value("${auth.service.account.key}")
-    private Resource ACCOUNT_KEY;
+    private String ACCOUNT_SECRET_JSON;
 
     @Bean
     public GoogleCredentials credential() {
-        LOGGER.debug("Creating credentials...");
+        LOGGER.info("Creating credentials...");
         try {
-            GoogleCredentials credentials = GoogleCredentials.fromStream(ACCOUNT_KEY.getInputStream()).createScoped(SCOPES);
-            LOGGER.debug("Credentials loaded successfully");
+            GoogleCredentials credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(ACCOUNT_SECRET_JSON.getBytes(StandardCharsets.UTF_8))).createScoped(SCOPES);
+            LOGGER.info("Credentials loaded successfully");
             return credentials;
         } catch (IOException e) {
             LOGGER.error("Could not create credentials.", e);
-            LOGGER.warn("Credentials: {}", ACCOUNT_KEY.toString());
             throw new RuntimeException(e);
         }
     }
