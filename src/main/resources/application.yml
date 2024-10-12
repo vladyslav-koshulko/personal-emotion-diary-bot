@@ -27,9 +27,5 @@ server:
 
 logging:
   level:
-    root: DEBUG
-    org:
-      springframework:
-        web: DEBUG
     sia:
       emotion_diary_bot: DEBUG
